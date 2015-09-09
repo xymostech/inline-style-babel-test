@@ -72,11 +72,13 @@ module.exports = function(babel) {
 
     function makeStyleAdder(css) {
         return [
+            // (function(){ ... })()
             t.expressionStatement(t.callExpression(
                 t.functionExpression(
                     null,
                     [],
                     t.blockStatement([
+                        // var style = document.createElement("style");
                         t.variableDeclaration(
                             "var",
                             [
@@ -89,6 +91,7 @@ module.exports = function(babel) {
                                 )
                             ]
                         ),
+                        // style.innerHTML = ...
                         t.expressionStatement(
                             t.assignmentExpression(
                                 "=",
@@ -96,6 +99,7 @@ module.exports = function(babel) {
                                 t.literal(css)
                             )
                         ),
+                        // document.head.appendChild(style);
                         t.expressionStatement(
                             t.callExpression(
                                 t.memberExpression(
@@ -125,12 +129,6 @@ module.exports = function(babel) {
                             buildCSSDeclarations(node.arguments)
                         )
                     )
-                    /*t.expressionStatement(t.literal(
-                        makeCSSDeclaration(
-                            className,
-                            buildCSSDeclarations(node.arguments)
-                        )
-                    ))*/
                 );
 
                 return t.expressionStatement(t.literal(className));
